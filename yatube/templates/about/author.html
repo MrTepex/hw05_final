@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Об авторе проекта{% endblock %}
+{%  load static %}
+{% block content %}
+<div class="container py-5">
+  <h1>Привет, я автор</h1>
+  <p>
+    Тут я размещу информацию о себе, используя свои умения верстать.
+    Картинки, блоки, элементы бустрап.
+  </p>
+  <p>
+    А может быть, просто напишу несколько абзацев текста.
+  </p>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+  .card {
+      box-shadow: 0 12px 8px 0 rgba(0,0,0,0.2);
+      transition: 0.3s;
+      width: 30%;
+  }
+  .card:hover {
+      box-shadow: 0 12px 8px 16px rgba(0,0,0,0.2);
+  }
+
+  img {
+      border-radius: 5px 5px 0 0;
+  }
+  .container {
+      padding: 2px 16px;
+  }
+  </style>
+  <body>
+    <h2>А вот и я!</h2>
+    <div class="card">
+      <a href="https://vk.com/mrawesome" target="_blank">
+        <img src="{% static 'img/author.jpg' %}" alt="Avatar" style="width:100%">
+      </a>
+      <div class="container">
+        <h4>Сам мэтр</h4>
+        <p>М.В. Терехов</p>
+      </div>
+    </div>
+  </body>
+</div>
+{% endblock %}
