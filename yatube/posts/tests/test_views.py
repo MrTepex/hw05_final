@@ -235,14 +235,14 @@ class PostViewsTest(TestCase):
         self.assertNotEqual(object_1, object_2)
 
     def test_cache_works_properly(self):
-        response1 = self.authorized_client.get(reverse('posts:index'))
-        result_1 = response1.content
+        response_1 = self.authorized_client.get(reverse('posts:index'))
+        result_1 = response_1.content
         Post.objects.filter(id=1).delete()
-        response2 = self.authorized_client.get(reverse('posts:index'))
-        result_2 = response2.content
+        response_2 = self.authorized_client.get(reverse('posts:index'))
+        result_2 = response_2.content
         self.assertEqual(result_1, result_2)
         cache.clear()
-        response3 = self.authorized_client.get(reverse('posts:index'))
-        result_3 = response3.content
+        response_3 = self.authorized_client.get(reverse('posts:index'))
+        result_3 = response_3.content
         self.assertNotEqual(result_1, result_3)
         self.assertNotEqual(result_2, result_3)

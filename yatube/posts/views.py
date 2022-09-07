@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 
 from .forms import CommentForm, PostForm
-from .models import Comment, Group, Post, get_user_model
+from .models import Comment, Follow, Group, Post, get_user_model
 
 User = get_user_model()
 
@@ -39,10 +39,15 @@ def profile(request, username):
     posts_amount = Post.objects.select_related('author').filter(
         author_id=author.id).count()
     post_list = Post.objects.filter(author_id=author.id)
+    following = False
+    if request.user.is_authenticated:
+        if Follow.objects.filter(user=request.user, author=author).exists():
+            following = True
     context = {
         'author': author,
         'user_full_name': user_full_name,
         'posts_amount': posts_amount,
+        'following': following,
     }
     context.update(get_page_objects(post_list, request))
     return render(request, 'posts/profile.html', context)
@@ -116,17 +121,29 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    pass
-    # context = {}
-    # return render(request, 'posts/follow.html', context)
+    posts = Post.objects.filter(
+        author__following__user=request.user).select_related('author', 'group')
+    context = {
+        'posts': posts
+    }
+    return render(request, 'posts/follow.html', context)
 
 
 @login_required
 def profile_follow(request, username):
-    if request.method == 'POST':
-        data = User.objects.select_related('author').get()
+    follower = request.user
+    fav_author = User.objects.get(username=username)
+    if not Follow.objects.filter(user=follower, author=fav_author).exists():
+        if follower.id != fav_author.id:
+            Follow.objects.create(user=follower, author=fav_author)
+            return follow_index(request)
+    return profile(request, username)
 
 
 @login_required
 def profile_unfollow(request, username):
-    pass
+    follower = request.user
+    following = User.objects.get(username=username)
+    Follow.objects.filter(user=follower,
+                          author=following).delete()
+    return profile(request, username)
