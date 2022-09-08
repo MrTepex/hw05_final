@@ -123,9 +123,7 @@ def add_comment(request, post_id):
 def follow_index(request):
     posts = Post.objects.filter(
         author__following__user=request.user).select_related('author', 'group')
-    context = {
-        'posts': posts
-    }
+    context = get_page_objects(posts, request)
     return render(request, 'posts/follow.html', context)
 
 
@@ -136,7 +134,7 @@ def profile_follow(request, username):
     if not Follow.objects.filter(user=follower, author=fav_author).exists():
         if follower.id != fav_author.id:
             Follow.objects.create(user=follower, author=fav_author)
-            return follow_index(request)
+            return redirect('posts:follow_index')
     return profile(request, username)
 
 

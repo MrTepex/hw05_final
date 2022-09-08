@@ -12,7 +12,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from ..forms import CommentForm
-from ..models import Comment, Group, Post
+from ..models import Comment, Follow, Group, Post
 
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -246,3 +246,21 @@ class PostViewsTest(TestCase):
         result_3 = response_3.content
         self.assertNotEqual(result_1, result_3)
         self.assertNotEqual(result_2, result_3)
+
+    def test_follow_works_properly(self):
+        """Проверка, что авторизованный пользователь может подписываться
+         на других пользователей и удалять их из подписок"""
+        self.authorized_client_2 = User.objects.create(username='BBB')
+        following_count = Follow.objects.all().count()
+        Post.objects.create(author=User.objects.create(username='AAA'),
+                            text='1111')
+        self.authorized_client.post(reverse(
+            'posts:profile_follow', kwargs={'username': 'AAA'}))
+        self.assertEqual(Follow.objects.all().count(),
+                         following_count + 1)
+        self.assertNotEqual(Follow.objects.filter(
+            user_id=self.authorized_client_2.id).count(),
+                         following_count + 1)
+        self.authorized_client.post(reverse('posts:profile_unfollow',
+                                            kwargs={'username': 'AAA'}))
+        self.assertEqual(Follow.objects.all().count(), 0)
