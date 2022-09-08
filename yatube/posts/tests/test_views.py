@@ -136,7 +136,7 @@ class PostViewsTest(TestCase):
         expected_comment_context = Comment.objects.filter(post_id=self.post.id)
         self.assertQuerysetEqual(response.context.get('comments'),
                                  map(repr, expected_comment_context))
-        self.assertEqual(response.context.get('form'), CommentForm)
+        self.assertIsInstance(response.context.get('form'), CommentForm)
 
     def test_post_create_and_edit_page_show_correct_context(self):
         """Проверка правильного контекста функции post_create"""
@@ -259,8 +259,7 @@ class PostViewsTest(TestCase):
         self.assertEqual(Follow.objects.all().count(),
                          following_count + 1)
         self.assertNotEqual(Follow.objects.filter(
-            user_id=self.authorized_client_2.id).count(),
-                         following_count + 1)
+            user_id=self.authorized_client_2.id).count(), following_count + 1)
         self.authorized_client.post(reverse('posts:profile_unfollow',
                                             kwargs={'username': 'AAA'}))
         self.assertEqual(Follow.objects.all().count(), 0)

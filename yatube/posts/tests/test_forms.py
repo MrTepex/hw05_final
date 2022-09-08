@@ -156,8 +156,10 @@ class CommentFormsTest(TestCase):
         со страницы комментария поста"""
         response = self.guest_client.post(reverse(
             'posts:add_comment', kwargs={'post_id': self.post.id}))
-        self.assertRedirects(response, f"{reverse('users:login')}?next="
-        f"{reverse('posts:add_comment', kwargs={'post_id': self.post.id})}")
+        self.assertRedirects(
+            response,
+            f"{reverse('users:login')}?next="
+            f"{reverse('posts:add_comment', args=(self.post.id,))}")
 
     def test_comment_form_labels(self):
         text_label = CommentFormsTest.form.fields['text'].label
