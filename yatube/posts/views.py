@@ -62,7 +62,7 @@ def post_detail(request, post_id):
     posts_amount = Post.objects.select_related('author').filter(
         author_id=author.id).count()
     comments = Comment.objects.filter(post_id=post_id)
-    form = CommentForm
+    form = CommentForm(request.POST or None,)
     context = {
         'post': post,
         'title_text': title_text,
