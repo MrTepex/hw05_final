@@ -80,6 +80,7 @@ class PostViewsTest(TestCase):
             reverse('posts:post_create'): 'posts/post_create.html',
             reverse('posts:post_edit', kwargs={'post_id': self.post.id}):
                 'posts/post_create.html',
+            reverse('posts:follow_index'): 'posts/follow.html',
         }
         for reverse_name, template in templates_pages_names.items():
             with self.subTest(reverse_name=reverse_name):
@@ -94,6 +95,23 @@ class PostViewsTest(TestCase):
         self.assertEqual(obj.text, 'Тестовый пост')
         self.assertEqual(obj.author, self.user)
         self.assertEqual(obj.group, self.group)
+        self.assertIsInstance(obj.pub_date, datetime.datetime)
+        self.assertIsInstance(obj.image, ImageFieldFile)
+
+    def test_follow_index_page_show_correct_context(self):
+        """Проверка правильного контекста функции index_follow"""
+        post = Post.objects.create(author=User.objects.create(
+            username='AAA'),
+            text='1111',
+            group=self.group
+        )
+        self.authorized_client.post(reverse(
+            'posts:profile_follow', kwargs={'username': 'AAA'}))
+        response = self.authorized_client.get(reverse('posts:follow_index'))
+        obj = response.context['page_obj'][0]
+        self.assertEqual(obj.text, post.text)
+        self.assertEqual(obj.author, post.author)
+        self.assertEqual(obj.group, post.group)
         self.assertIsInstance(obj.pub_date, datetime.datetime)
         self.assertIsInstance(obj.image, ImageFieldFile)
 

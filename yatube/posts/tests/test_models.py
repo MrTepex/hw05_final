@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from ..models import Comment, Group, Post
+from ..models import Comment, Follow, Group, Post
 
 
 class PostsModelTest(TestCase):
@@ -53,7 +53,7 @@ class CommentModelTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = get_user_model().objects.create_user(
-            username='111'
+            username='Anne_Hathaway'
         )
         cls.post = Post.objects.create(
             author=cls.user,
@@ -86,3 +86,34 @@ class CommentModelTest(TestCase):
                 self.assertEqual(post_verbose, expected_value,
                                  f'verbose_name для "{field}" модели '
                                  f'"{comment.__class__.__name__}" некорректно')
+
+
+class FollowModelTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = get_user_model().objects.create_user(
+            username='Anne_Hathaway'
+        )
+        cls.post = Post.objects.create(
+            author=cls.user,
+            text='Тестовый пост',
+        )
+        cls.following = Follow.objects.create(
+            user_id=cls.user.id,
+            author_id=1
+        )
+
+    def test_comment_model_verbose_name(self):
+        """Проверка корректности verbose_name атрибутов модели Comment"""
+        flwng = self.following
+        field_verboses = {
+            'user': 'Подписчик',
+            'author': 'Автор',
+        }
+        for field, expected_value in field_verboses.items():
+            with self.subTest(field=field):
+                post_verbose = flwng._meta.get_field(field).verbose_name
+                self.assertEqual(post_verbose, expected_value,
+                                 f'verbose_name для "{field}" модели '
+                                 f'"{flwng.__class__.__name__}" некорректно')

@@ -3,6 +3,7 @@ from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import Client, TestCase
+from django.shortcuts import reverse
 
 from ..models import Group, Post
 
@@ -40,7 +41,6 @@ class PostURLTests(TestCase):
             '/posts/1/': HTTPStatus.OK,
             '/posts/1/edit/': HTTPStatus.FOUND,
             '/create/': HTTPStatus.FOUND,
-            '/posts/1/comment/': HTTPStatus.FOUND,
             '/unexisting_page/': HTTPStatus.NOT_FOUND,
         }
         for address, status in urls.items():
@@ -60,6 +60,19 @@ class PostURLTests(TestCase):
         response = self.guest_client.get('/posts/1/edit/', follow=True)
         self.assertRedirects(response, '/auth/login/?next=/posts/1/edit/')
 
+    def test_profile_follow_url_redirect_anonymous_on_login(self):
+        """Проверка редиректа неавторизованного пользователя
+        со страницы подписки на страницу "войти" """
+        response = self.guest_client.get('/profile/1/follow/', follow=True)
+        self.assertRedirects(response, '/auth/login/?next=/profile/1/follow/')
+
+    def test_profile_unfollow_url_redirect_anonymous_on_login(self):
+        """Проверка редиректа неавторизованного пользователя
+        со страницы подписки на страницу "войти" """
+        response = self.guest_client.get('/profile/1/unfollow/', follow=True)
+        self.assertRedirects(response,
+                             '/auth/login/?next=/profile/1/unfollow/')
+
     def test_posts_urls_uses_correct_templates(self):
         """Проверка на правильные шаблоны для страниц приложения users"""
         cache.clear()
@@ -70,6 +83,7 @@ class PostURLTests(TestCase):
             '/posts/1/': 'posts/post_detail.html',
             '/posts/1/edit/': 'posts/post_create.html',
             '/create/': 'posts/post_create.html',
+            '/follow/': 'posts/follow.html',
         }
         for address, template in templates_url_names.items():
             with self.subTest(address=address):
