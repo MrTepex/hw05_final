@@ -10,6 +10,7 @@ class AboutUrlTest(TestCase):
         self.guest_client = Client()
 
     def test_about_urls_exist_at_desired_location(self):
+        """Проверка доступности страниц about"""
         urls = {
             reverse('about:author'): HTTPStatus.OK,
             reverse('about:tech'): HTTPStatus.OK,

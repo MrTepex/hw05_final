@@ -132,8 +132,6 @@ class PostViewsTest(TestCase):
             reverse('posts:profile', kwargs={'username': 'Hathaway'}))
         obj = response.context['page_obj'][0]
         self.assertEqual(response.context.get('author'), self.user)
-        self.assertEqual(response.context.get('user_full_name'), ' ')
-        self.assertEqual(response.context.get('posts_amount'), 1)
         self.assertEqual(obj.text, 'Тестовый пост')
         self.assertEqual(obj.author, self.user)
         self.assertEqual(obj.group, self.group)
@@ -148,9 +146,6 @@ class PostViewsTest(TestCase):
         self.assertEqual(response.context.get('group'), self.group)
         self.assertEqual(response.context.get('title_text'), 'Тестовый пост')
         self.assertEqual(response.context.get('author'), self.user)
-        self.assertEqual(response.context.get('posts_amount'), 1)
-        self.assertIsInstance(
-            response.context.get('pub_date'), datetime.datetime)
         expected_comment_context = Comment.objects.filter(post_id=self.post.id)
         self.assertQuerysetEqual(response.context.get('comments'),
                                  map(repr, expected_comment_context))

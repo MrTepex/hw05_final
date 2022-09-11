@@ -4,19 +4,20 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 
 from .forms import CommentForm, PostForm
-from .models import Comment, Follow, Group, Post, get_user_model
+from .models import Comment, Follow, Group, Post, User
 
-User = get_user_model()
+POSTS_PER_PAGE = 10
+CACHE_SECONDS_DELAY = 20
 
 
 def get_page_objects(queryset, request):
-    paginator = Paginator(queryset, 10)
+    paginator = Paginator(queryset, POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return {'page_obj': page_obj}
 
 
-@cache_page(20, key_prefix='index_page')
+@cache_page(CACHE_SECONDS_DELAY, key_prefix='index_page')
 def index(request):
     posts = Post.objects.select_related('author')
     context = get_page_objects(posts, request)
@@ -35,9 +36,6 @@ def group_posts(request, slug):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    user_full_name = f'{author.first_name} {author.last_name}'
-    posts_amount = Post.objects.select_related('author').filter(
-        author_id=author.id).count()
     post_list = Post.objects.filter(author_id=author.id)
     following = False
     if request.user.is_authenticated:
@@ -45,8 +43,6 @@ def profile(request, username):
             following = True
     context = {
         'author': author,
-        'user_full_name': user_full_name,
-        'posts_amount': posts_amount,
         'following': following,
     }
     context.update(get_page_objects(post_list, request))
@@ -57,18 +53,13 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     group = post.group
     title_text = post.text[:30]
-    pub_date = post.pub_date
     author = post.author
-    posts_amount = Post.objects.select_related('author').filter(
-        author_id=author.id).count()
     comments = Comment.objects.filter(post_id=post_id)
     form = CommentForm(request.POST or None)
     context = {
         'post': post,
         'title_text': title_text,
-        'pub_date': pub_date,
         'author': author,
-        'posts_amount': posts_amount,
         'group': group,
         'comments': comments,
         'form': form,
@@ -133,7 +124,7 @@ def profile_follow(request, username):
     fav_author = User.objects.get(username=username)
     if not Follow.objects.filter(user=follower, author=fav_author).exists():
         if follower.id != fav_author.id:
-            Follow.objects.create(user=follower, author=fav_author)
+            Follow.objects.get_or_create(user=follower, author=fav_author)
             return redirect('posts:follow_index')
     return profile(request, username)
 

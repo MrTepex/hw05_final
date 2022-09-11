@@ -13,6 +13,10 @@ class Group(models.Model):
     description = models.TextField(max_length=700,
                                    verbose_name='Описание группы')
 
+    class Meta:
+        verbose_name = 'Группа'
+        verbose_name_plural = 'Группы'
+
     def __str__(self):
         return self.title
 
@@ -84,3 +88,8 @@ class Follow(models.Model):
                                related_name='following',
                                verbose_name='Автор',
                                )
+
+    class Meta:
+        unique_together = ['user', 'author']
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
