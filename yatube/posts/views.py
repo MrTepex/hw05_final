@@ -122,10 +122,9 @@ def follow_index(request):
 def profile_follow(request, username):
     follower = request.user
     fav_author = User.objects.get(username=username)
-    if not Follow.objects.filter(user=follower, author=fav_author).exists():
-        if follower.id != fav_author.id:
-            Follow.objects.get_or_create(user=follower, author=fav_author)
-            return redirect('posts:follow_index')
+    if follower.id != fav_author.id:
+        Follow.objects.get_or_create(user=follower, author=fav_author)
+        return redirect('posts:follow_index')
     return profile(request, username)
 
 

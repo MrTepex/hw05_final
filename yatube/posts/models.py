@@ -43,7 +43,7 @@ class Post(models.Model):
     )
 
     class Meta:
-        ordering = ['-pub_date']
+        ordering = ('-pub_date',)
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'
 
@@ -68,7 +68,7 @@ class Comment(models.Model):
                                    verbose_name='Дата и время комментария')
 
     class Meta:
-        ordering = ['-created']
+        ordering = ('-created',)
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
 
@@ -90,6 +90,6 @@ class Follow(models.Model):
                                )
 
     class Meta:
-        unique_together = ['user', 'author']
+        unique_together = ('user', 'author',)
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'

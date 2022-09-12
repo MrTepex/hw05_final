@@ -17,8 +17,3 @@ class AboutViewsTest(TestCase):
             with self.subTest(address=address):
                 response = self.guest_client.get(address)
                 self.assertTemplateUsed(response, template)
-
-    def test_about_author_page_uses_correct_template(self):
-        """Проверка корректного шаблона страницы about/author"""
-        response = self.guest_client.get(reverse('about:author'))
-        self.assertTemplateUsed(response, 'about/author.html')
