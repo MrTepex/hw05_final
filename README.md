@@ -1,3 +1,41 @@
-# hw05_final
+# yatube_project
+Социальная сеть блогеров
+## Описание:
+- Социальная сеть для публикации личных дневников.
+- Это сайт, на котором можно создать свою страницу. Если на нее зайти, можно посмотреть все записи автора.
+- Пользователи смогут заходить на чужие страницы, подписываться на авторов и комментировать их записи.
+- Автор может выбрать имя и уникальный адрес для своей страницы.
+- Имеется возможность модерировать записи и блокировать пользователей, если начнут присылать спам.
+- Записи можно отправить в сообщество и посмотреть там записи разных авторов.
+## Технологии в проекте:
+- Python 3.7
+- Django 2.2.19
+### Запуск проекта в dev-режиме
+- Установите и активируйте виртуальное окружение в корневом каталоге проекта:
+```
+- Установка для Windows:            - Установка для macOS и Linux:
+   python -m venv venv                    python3 -m venv venv
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+- Активация для Windows:            - Активация для для macOS и Linux:
+source venv/scripts/activate              source venv/bin/activate
+
+
+```
+- Установите зависимости из файла requirements.txt
+```
+pip install -r requirements.txt
+``` 
+- В папке с файлом manage.py выполните миграции:
+```
+python manage.py makemigrations
+python.manage.py migrate
+```
+- В папке с файлом manage.py выполните команду:
+```
+python manage.py runserver
+```
+
+### Автор
+_Михаил Терехов_ 
+
+https://github.com/MrTepex/
